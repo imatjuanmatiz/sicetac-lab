@@ -44,7 +44,6 @@ export default function Page() {
   const [destino, setDestino] = useState("");
   const [vehiculo, setVehiculo] = useState("C3S3");
   const [carroceria, setCarroceria] = useState("GENERAL");
-  const [totalKm, setTotalKm] = useState("0");
   const [kmPlano, setKmPlano] = useState("0");
   const [kmOndulado, setKmOndulado] = useState("0");
   const [kmMontanoso, setKmMontanoso] = useState("0");
@@ -54,6 +53,12 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState(null);
+  const sumKm =
+    Number(kmPlano || 0) +
+    Number(kmOndulado || 0) +
+    Number(kmMontanoso || 0) +
+    Number(kmUrbano || 0) +
+    Number(kmDespavimentado || 0);
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -71,7 +76,7 @@ export default function Page() {
           vehiculo,
           carroceria,
           manual_mode: true,
-          total_km: Number(totalKm || 0),
+          total_km: sumKm,
           km_plano: Number(kmPlano || 0),
           km_ondulado: Number(kmOndulado || 0),
           km_montanoso: Number(kmMontanoso || 0),
@@ -151,28 +156,51 @@ export default function Page() {
           </div>
         </div>
         <div style={{ display: "grid", gap: 8 }}>
-          <p style={{ margin: 0 }}>Kilometros (acepta 0):</p>
-          <input type="number" step="0.01" min="0" value={totalKm} onChange={(e) => setTotalKm(e.target.value)} placeholder="total_km" />
-          <input type="number" step="0.01" min="0" value={kmPlano} onChange={(e) => setKmPlano(e.target.value)} placeholder="km_plano" />
-          <input type="number" step="0.01" min="0" value={kmOndulado} onChange={(e) => setKmOndulado(e.target.value)} placeholder="km_ondulado" />
-          <input type="number" step="0.01" min="0" value={kmMontanoso} onChange={(e) => setKmMontanoso(e.target.value)} placeholder="km_montanoso" />
-          <input type="number" step="0.01" min="0" value={kmUrbano} onChange={(e) => setKmUrbano(e.target.value)} placeholder="km_urbano" />
-          <input
-            type="number"
-            step="0.01"
-            min="0"
-            value={kmDespavimentado}
-            onChange={(e) => setKmDespavimentado(e.target.value)}
-            placeholder="km_despavimentado"
-          />
-          <input
-            type="number"
-            step="1"
-            min="0"
-            value={valorPeajesManual}
-            onChange={(e) => setValorPeajesManual(e.target.value)}
-            placeholder="valor_peajes_manual (COP)"
-          />
+          <p style={{ margin: 0, fontWeight: 600 }}>Kilometros por tipo de via (acepta 0):</p>
+          <p style={{ margin: 0, fontSize: 13, color: "#555" }}>
+            Instruccion: llena los kilometros de la ruta por cada tipo de via.
+          </p>
+          <label style={{ display: "grid", gap: 4 }}>
+            <span>Km plano:</span>
+            <input type="number" step="0.01" min="0" value={kmPlano} onChange={(e) => setKmPlano(e.target.value)} />
+          </label>
+          <label style={{ display: "grid", gap: 4 }}>
+            <span>Km ondulado:</span>
+            <input type="number" step="0.01" min="0" value={kmOndulado} onChange={(e) => setKmOndulado(e.target.value)} />
+          </label>
+          <label style={{ display: "grid", gap: 4 }}>
+            <span>Km montañoso:</span>
+            <input type="number" step="0.01" min="0" value={kmMontanoso} onChange={(e) => setKmMontanoso(e.target.value)} />
+          </label>
+          <label style={{ display: "grid", gap: 4 }}>
+            <span>Km urbano:</span>
+            <input type="number" step="0.01" min="0" value={kmUrbano} onChange={(e) => setKmUrbano(e.target.value)} />
+          </label>
+          <label style={{ display: "grid", gap: 4 }}>
+            <span>Km despavimentado:</span>
+            <input type="number" step="0.01" min="0" value={kmDespavimentado} onChange={(e) => setKmDespavimentado(e.target.value)} />
+          </label>
+          <div
+            style={{
+              padding: 10,
+              borderRadius: 8,
+              border: "1px solid #d9d9d9",
+              background: "#f7f7f7",
+              fontSize: 14,
+            }}
+          >
+            <div>
+              <strong>Suma km por tipo de via:</strong> {sumKm.toFixed(2)} km
+            </div>
+            <div>El modelo calculara usando esta suma como <code>total_km</code>.</div>
+          </div>
+        </div>
+        <div style={{ display: "grid", gap: 8, padding: 12, border: "1px solid #ddd", borderRadius: 8 }}>
+          <p style={{ margin: 0, fontWeight: 600 }}>Peajes manuales</p>
+          <label style={{ display: "grid", gap: 4 }}>
+            <span>Valor total peajes (COP):</span>
+            <input type="number" step="1" min="0" value={valorPeajesManual} onChange={(e) => setValorPeajesManual(e.target.value)} />
+          </label>
         </div>
         <button type="submit" disabled={loading}>
           {loading ? "Consultando..." : "Consultar"}
