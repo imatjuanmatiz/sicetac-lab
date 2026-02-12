@@ -97,12 +97,14 @@ async function parseInput(req) {
   let origen = cleanText(body?.origen);
   let destino = cleanText(body?.destino);
   const message = cleanText(body?.message);
+  let route_resolution = "direct_fields";
 
   if ((!origen || !destino) && message) {
     const extracted = extractRoute(message);
     if (extracted) {
       origen = origen || extracted.origen;
       destino = destino || extracted.destino;
+      route_resolution = "parsed_from_message";
     }
   }
 
@@ -120,6 +122,7 @@ async function parseInput(req) {
     km_urbano: parseNumber(body?.km_urbano, 0),
     km_despavimentado: parseNumber(body?.km_despavimentado, 0),
     valor_peajes_manual: parseNumber(body?.valor_peajes_manual, 0),
+    route_resolution,
     raw_message: message || null,
   };
 }
@@ -322,6 +325,8 @@ export async function POST(req) {
     km_despavimentado: input.km_despavimentado,
     valor_peajes_manual: input.valor_peajes_manual,
   };
+  const calculatedTotalKm =
+    input.km_plano + input.km_ondulado + input.km_montanoso + input.km_urbano + input.km_despavimentado;
 
   const upstreamUrl = input.manual_mode ? resolveManualApiUrl() : resolveApiUrl();
   const res = await fetch(upstreamUrl, {
@@ -341,6 +346,26 @@ export async function POST(req) {
     diagnostics: buildDiagnostics(data, requestPayload),
     raw: data,
     warnings: [],
+  };
+  responsePayload.diagnostics.input_resolution = {
+    route_resolution: input.route_resolution,
+    origen: input.origen,
+    destino: input.destino,
+    raw_message: input.raw_message,
+  };
+  responsePayload.diagnostics.manual_variables = {
+    vehiculo: input.vehiculo,
+    carroceria: input.carroceria,
+    resumen: input.resumen,
+    manual_mode: input.manual_mode,
+    total_km_sent: input.total_km,
+    total_km_from_sum: Number(calculatedTotalKm.toFixed(2)),
+    km_plano: input.km_plano,
+    km_ondulado: input.km_ondulado,
+    km_montanoso: input.km_montanoso,
+    km_urbano: input.km_urbano,
+    km_despavimentado: input.km_despavimentado,
+    valor_peajes_manual: input.valor_peajes_manual,
   };
   if (input.manual_mode && !responsePayload.diagnostics.backend_manual_applied) {
     responsePayload.warnings.push(
