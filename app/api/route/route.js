@@ -1,6 +1,21 @@
 const DEFAULT_API_URL = "https://sicetac-api-mcp.onrender.com/consulta";
 const CAPTURE_WEBHOOK_URL = (process.env.ROUTE_CAPTURE_WEBHOOK_URL || "").trim();
 const CAPTURE_WEBHOOK_SECRET = (process.env.CAPTURE_WEBHOOK_SECRET || "").trim();
+const ALLOWED_VEHICLES = new Set(["C278", "C289", "C2910", "C2M10", "C3", "C2S2", "C2S3", "C3S2", "C3S3", "V3"]);
+const ALLOWED_BODY_TYPES = new Set([
+  "GENERAL",
+  "ESTIBA",
+  "PLATAFORMA",
+  "ESTACAS GRANEL SOLIDO",
+  "ESTIBAS GRANEL SOLIDO",
+  "PLATAFORMA GRANEL SOLIDO",
+  "FURGON GENERAL",
+  "FURGON GRANEL SOLIDO",
+  "FURGON REFRIGERADO",
+  "PORTACONTENEDORES",
+  "TANQUE - GRANEL LIQUIDO",
+  "VOLCO",
+]);
 
 function resolveApiUrl() {
   const configured = (process.env.SICETAC_API_URL || DEFAULT_API_URL).trim();
@@ -240,6 +255,24 @@ export async function POST(req) {
   if (!input.origen || !input.destino) {
     return Response.json(
       { error: "No pude detectar origen y destino. Ej: 'Bogotá a Barranquilla'." },
+      { status: 400 }
+    );
+  }
+  if (!ALLOWED_VEHICLES.has(input.vehiculo)) {
+    return Response.json(
+      {
+        error:
+          "Tipo de vehiculo invalido. Valores permitidos: C278, C289, C2910, C2M10, C3, C2S2, C2S3, C3S2, C3S3, V3.",
+      },
+      { status: 400 }
+    );
+  }
+  if (!ALLOWED_BODY_TYPES.has(input.carroceria)) {
+    return Response.json(
+      {
+        error:
+          "Tipo de carroceria invalido. Valores permitidos: GENERAL, ESTIBA, PLATAFORMA, ESTACAS GRANEL SOLIDO, ESTIBAS GRANEL SOLIDO, PLATAFORMA GRANEL SOLIDO, FURGON GENERAL, FURGON GRANEL SOLIDO, FURGON REFRIGERADO, PORTACONTENEDORES, TANQUE - GRANEL LIQUIDO, VOLCO.",
+      },
       { status: 400 }
     );
   }

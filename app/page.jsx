@@ -2,8 +2,21 @@
 
 import { useState } from "react";
 
-const VEHICLE_OPTIONS = ["C3S3", "C2", "C2G", "C3", "C3E", "V1", "V2", "V3"];
-const CARROCERIA_OPTIONS = ["GENERAL", "FURGON", "ESTACAS", "TANQUE"];
+const VEHICLE_OPTIONS = ["C278", "C289", "C2910", "C2M10", "C3", "C2S2", "C2S3", "C3S2", "C3S3", "V3"];
+const CARROCERIA_OPTIONS = [
+  "GENERAL",
+  "ESTIBA",
+  "PLATAFORMA",
+  "ESTACAS GRANEL SOLIDO",
+  "ESTIBAS GRANEL SOLIDO",
+  "PLATAFORMA GRANEL SOLIDO",
+  "FURGON GENERAL",
+  "FURGON GRANEL SOLIDO",
+  "FURGON REFRIGERADO",
+  "PORTACONTENEDORES",
+  "TANQUE - GRANEL LIQUIDO",
+  "VOLCO",
+];
 
 function RouteCard({ route, index, total }) {
   return (
