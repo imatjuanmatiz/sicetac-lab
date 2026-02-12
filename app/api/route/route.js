@@ -1,4 +1,5 @@
 const DEFAULT_API_URL = "https://sicetac-api-mcp.onrender.com/consulta";
+const DEFAULT_MANUAL_API_URL = "https://sicetac-api-mcp.onrender.com/consulta";
 const CAPTURE_WEBHOOK_URL = (process.env.ROUTE_CAPTURE_WEBHOOK_URL || "").trim();
 const CAPTURE_WEBHOOK_SECRET = (process.env.CAPTURE_WEBHOOK_SECRET || "").trim();
 const ALLOWED_VEHICLES = new Set(["C278", "C289", "C2910", "C2M10", "C3", "C2S2", "C2S3", "C3S2", "C3S3", "V3"]);
@@ -20,6 +21,13 @@ const ALLOWED_BODY_TYPES = new Set([
 function resolveApiUrl() {
   const configured = (process.env.SICETAC_API_URL || DEFAULT_API_URL).trim();
   // Forzamos endpoint estructurado para no perder H2/H4/H8 ni variantes.
+  if (configured.endsWith("/consulta_texto")) return configured.replace(/\/consulta_texto$/, "/consulta");
+  if (configured.endsWith("/consulta_resumen")) return configured.replace(/\/consulta_resumen$/, "/consulta");
+  return configured;
+}
+
+function resolveManualApiUrl() {
+  const configured = (process.env.SICETAC_MANUAL_API_URL || DEFAULT_MANUAL_API_URL).trim();
   if (configured.endsWith("/consulta_texto")) return configured.replace(/\/consulta_texto$/, "/consulta");
   if (configured.endsWith("/consulta_resumen")) return configured.replace(/\/consulta_resumen$/, "/consulta");
   return configured;
@@ -59,6 +67,17 @@ function parseBoolean(value, fallback = true) {
   return fallback;
 }
 
+function parseNumber(value, fallback = 0) {
+  if (typeof value === "number") return Number.isFinite(value) ? value : fallback;
+  if (typeof value === "string") {
+    const normalized = value.replace(",", ".").trim();
+    if (!normalized) return fallback;
+    const n = Number(normalized);
+    return Number.isFinite(n) ? n : fallback;
+  }
+  return fallback;
+}
+
 function cleanText(value) {
   if (typeof value !== "string") return "";
   return value.replace(/\s+/g, " ").trim();
@@ -93,6 +112,14 @@ async function parseInput(req) {
     vehiculo: cleanText(body?.vehiculo) || "C3S3",
     carroceria: cleanText(body?.carroceria) || "GENERAL",
     resumen: parseBoolean(body?.resumen, true),
+    manual_mode: parseBoolean(body?.manual_mode, true),
+    total_km: parseNumber(body?.total_km, 0),
+    km_plano: parseNumber(body?.km_plano, 0),
+    km_ondulado: parseNumber(body?.km_ondulado, 0),
+    km_montanoso: parseNumber(body?.km_montanoso, 0),
+    km_urbano: parseNumber(body?.km_urbano, 0),
+    km_despavimentado: parseNumber(body?.km_despavimentado, 0),
+    valor_peajes_manual: parseNumber(body?.valor_peajes_manual, 0),
     raw_message: message || null,
   };
 }
@@ -224,9 +251,12 @@ function buildNormalized(data, input, requestedRoute) {
 function buildDiagnostics(data, requestPayload) {
   const base = data?.SICETAC || data;
   const rawVariants = data?.SICETAC_VARIANTES || data?.variantes || data?.VARIANTES;
+  const backendManualApplied = !!(data?.manual_input || data?.manual_mode_applied === true || base?.manual_input);
   return {
     api_url: resolveApiUrl(),
+    manual_api_url: resolveManualApiUrl(),
     request_payload: requestPayload,
+    backend_manual_applied: backendManualApplied,
     has_root_totales: !!(data?.totales && typeof data.totales === "object"),
     has_sicetac_totales: !!(base?.totales && typeof base.totales === "object"),
     has_variantes: Array.isArray(rawVariants) && rawVariants.length > 0,
@@ -283,9 +313,18 @@ export async function POST(req) {
     vehiculo: input.vehiculo,
     carroceria: input.carroceria,
     resumen: input.resumen,
+    manual_mode: input.manual_mode,
+    total_km: input.total_km,
+    km_plano: input.km_plano,
+    km_ondulado: input.km_ondulado,
+    km_montanoso: input.km_montanoso,
+    km_urbano: input.km_urbano,
+    km_despavimentado: input.km_despavimentado,
+    valor_peajes_manual: input.valor_peajes_manual,
   };
 
-  const res = await fetch(resolveApiUrl(), {
+  const upstreamUrl = input.manual_mode ? resolveManualApiUrl() : resolveApiUrl();
+  const res = await fetch(upstreamUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(requestPayload),
@@ -301,7 +340,13 @@ export async function POST(req) {
     normalized: buildNormalized(data, input.raw_message, requestPayload),
     diagnostics: buildDiagnostics(data, requestPayload),
     raw: data,
+    warnings: [],
   };
+  if (input.manual_mode && !responsePayload.diagnostics.backend_manual_applied) {
+    responsePayload.warnings.push(
+      "El backend no confirmo la aplicacion de manual_mode. Verifica que use los kms manuales y valor_peajes_manual."
+    );
+  }
 
   await captureRouteQuery({
     ts: new Date().toISOString(),

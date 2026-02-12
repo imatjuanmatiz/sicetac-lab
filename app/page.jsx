@@ -44,6 +44,13 @@ export default function Page() {
   const [destino, setDestino] = useState("");
   const [vehiculo, setVehiculo] = useState("C3S3");
   const [carroceria, setCarroceria] = useState("GENERAL");
+  const [totalKm, setTotalKm] = useState("0");
+  const [kmPlano, setKmPlano] = useState("0");
+  const [kmOndulado, setKmOndulado] = useState("0");
+  const [kmMontanoso, setKmMontanoso] = useState("0");
+  const [kmUrbano, setKmUrbano] = useState("0");
+  const [kmDespavimentado, setKmDespavimentado] = useState("0");
+  const [valorPeajesManual, setValorPeajesManual] = useState("0");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState(null);
@@ -63,6 +70,14 @@ export default function Page() {
           destino,
           vehiculo,
           carroceria,
+          manual_mode: true,
+          total_km: Number(totalKm || 0),
+          km_plano: Number(kmPlano || 0),
+          km_ondulado: Number(kmOndulado || 0),
+          km_montanoso: Number(kmMontanoso || 0),
+          km_urbano: Number(kmUrbano || 0),
+          km_despavimentado: Number(kmDespavimentado || 0),
+          valor_peajes_manual: Number(valorPeajesManual || 0),
           resumen: true,
         }),
       });
@@ -82,7 +97,7 @@ export default function Page() {
   return (
     <main style={{ maxWidth: 860, margin: "40px auto", padding: 16, fontFamily: "system-ui" }}>
       <h1>Sicetac Lab</h1>
-      <p>Calcula una ruta con origen/destino separados y parametros editables.</p>
+      <p>Modo manual: ingresa origen/destino, km por tipo de via y valor manual de peajes.</p>
       <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
         <input
           name="origen"
@@ -135,6 +150,30 @@ export default function Page() {
             ))}
           </div>
         </div>
+        <div style={{ display: "grid", gap: 8 }}>
+          <p style={{ margin: 0 }}>Kilometros (acepta 0):</p>
+          <input type="number" step="0.01" min="0" value={totalKm} onChange={(e) => setTotalKm(e.target.value)} placeholder="total_km" />
+          <input type="number" step="0.01" min="0" value={kmPlano} onChange={(e) => setKmPlano(e.target.value)} placeholder="km_plano" />
+          <input type="number" step="0.01" min="0" value={kmOndulado} onChange={(e) => setKmOndulado(e.target.value)} placeholder="km_ondulado" />
+          <input type="number" step="0.01" min="0" value={kmMontanoso} onChange={(e) => setKmMontanoso(e.target.value)} placeholder="km_montanoso" />
+          <input type="number" step="0.01" min="0" value={kmUrbano} onChange={(e) => setKmUrbano(e.target.value)} placeholder="km_urbano" />
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            value={kmDespavimentado}
+            onChange={(e) => setKmDespavimentado(e.target.value)}
+            placeholder="km_despavimentado"
+          />
+          <input
+            type="number"
+            step="1"
+            min="0"
+            value={valorPeajesManual}
+            onChange={(e) => setValorPeajesManual(e.target.value)}
+            placeholder="valor_peajes_manual (COP)"
+          />
+        </div>
         <button type="submit" disabled={loading}>
           {loading ? "Consultando..." : "Consultar"}
         </button>
@@ -144,6 +183,16 @@ export default function Page() {
         <p style={{ marginTop: 16, color: "#b00020" }}>
           <strong>Error:</strong> {error}
         </p>
+      ) : null}
+      {Array.isArray(result?.warnings) && result.warnings.length > 0 ? (
+        <div style={{ marginTop: 16, padding: 12, border: "1px solid #f0ad4e", borderRadius: 8, background: "#fff8e6" }}>
+          <strong>Advertencia:</strong>
+          <ul style={{ margin: "8px 0 0 16px" }}>
+            {result.warnings.map((w, idx) => (
+              <li key={idx}>{w}</li>
+            ))}
+          </ul>
+        </div>
       ) : null}
 
       {result?.normalized ? (
@@ -185,7 +234,7 @@ export default function Page() {
       ) : null}
 
       <p style={{ marginTop: 16, fontSize: 12, color: "#666" }}>
-        Defaults: vehiculo C3S3 y carroceria GENERAL. Esta version permite cambiar ambos valores.
+        Defaults: vehiculo C3S3 y carroceria GENERAL. Este flujo usa payload manual con kms y peajes.
       </p>
     </main>
   );
