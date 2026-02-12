@@ -337,6 +337,17 @@ export async function POST(req) {
 
   const data = await res.json();
   if (!res.ok) {
+    const detail = (data?.detail || data?.error || "").toString();
+    if (input.manual_mode && /origen|destino/i.test(detail)) {
+      return Response.json(
+        {
+          error:
+            "El backend aun valida origen/destino con la base de municipios. Para modo manual puro, hay que activar manual_mode en el backend.",
+          backend_detail: data,
+        },
+        { status: 400 }
+      );
+    }
     return Response.json(data, { status: res.status });
   }
 

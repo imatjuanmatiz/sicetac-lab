@@ -101,19 +101,38 @@ export default function Page() {
 
   return (
     <main style={{ maxWidth: 860, margin: "40px auto", padding: 16, fontFamily: "system-ui" }}>
-      <h1>Sicetac Lab</h1>
-      <p>Modo manual: ingresa origen/destino, km por tipo de via y valor manual de peajes.</p>
+      <h1>SICETAC - LAB</h1>
+      <p style={{ marginTop: 0, fontWeight: 600 }}>CALCULA LAS RUTAS QUE NO ESTAN EN SICE USANDO EL MODELO</p>
+      <a
+        href="https://sicealinstante.vercel.app/"
+        target="_blank"
+        rel="noreferrer"
+        style={{
+          display: "inline-block",
+          marginBottom: 12,
+          padding: "8px 12px",
+          borderRadius: 8,
+          border: "1px solid #999",
+          textDecoration: "none",
+          color: "#111",
+          background: "#f5f5f5",
+          fontWeight: 600,
+        }}
+      >
+        Si la ruta existe en SICETAC, ve a SICETAC AL INSTANTE
+      </a>
+      <p>Modo manual: origen y destino son campos de referencia; el calculo usa km por tipo de via y peajes manuales.</p>
       <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
         <input
           name="origen"
-          placeholder="Origen (ej. Bogota)"
+          placeholder="Origen (texto de referencia)"
           required
           value={origen}
           onChange={(e) => setOrigen(e.target.value)}
         />
         <input
           name="destino"
-          placeholder="Destino (ej. Medellin)"
+          placeholder="Destino (texto de referencia)"
           required
           value={destino}
           onChange={(e) => setDestino(e.target.value)}
