@@ -101,9 +101,8 @@ export default function Page() {
 
   return (
     <main style={{ maxWidth: 860, margin: "40px auto", padding: 16, fontFamily: "system-ui" }}>
-      <h1>SICETAC - LAB</h1>
-      <p style={{ marginTop: 0, fontWeight: 600 }}>CALCULA LAS RUTAS QUE NO ESTAN EN SICE USANDO EL MODELO</p>
-      <a
+      <h1>SICETAC - MANUAL</h1>
+      <p style={{ marginTop: 0, fontWeight: 600 }}>SICETAC-LAB: En esta version puedes calcular cualquier ruta, introducionendo las variables de km y peajes y seleccionando el tipo de vehiculo y carrocería<a
         href="https://sicealinstante.vercel.app/"
         target="_blank"
         rel="noreferrer"
@@ -119,7 +118,7 @@ export default function Page() {
           fontWeight: 600,
         }}
       >
-        Si la ruta existe en SICETAC, ve a SICETAC AL INSTANTE haciendo click aqui
+        Si la ruta existe en SICETAC, ve a SICETAC AL INSTANTE haciendo clic aqui
       </a>
       <p>Modo manual: origen y destino son campos de referencia; el calculo usa km por tipo de via y peajes manuales.</p>
       <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
@@ -281,7 +280,7 @@ export default function Page() {
       ) : null}
 
       <p style={{ marginTop: 16, fontSize: 12, color: "#666" }}>
-        Defaults: vehiculo C3S3 y carroceria GENERAL. Este flujo usa payload manual con kms y peajes.
+        Defaults:Este flujo usa el modo manual con kms y peajes y presenta los resultados para 2 Horas, 4 Horas y 8 Horas logísticas. 
       </p>
       <footer
         style={{
