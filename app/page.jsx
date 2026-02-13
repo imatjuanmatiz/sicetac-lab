@@ -119,7 +119,7 @@ export default function Page() {
           fontWeight: 600,
         }}
       >
-        Si la ruta existe en SICETAC, ve a SICETAC AL INSTANTE
+        Si la ruta existe en SICETAC, ve a SICETAC AL INSTANTE haciendo click aqui
       </a>
       <p>Modo manual: origen y destino son campos de referencia; el calculo usa km por tipo de via y peajes manuales.</p>
       <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
