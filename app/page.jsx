@@ -283,6 +283,18 @@ export default function Page() {
       <p style={{ marginTop: 16, fontSize: 12, color: "#666" }}>
         Defaults: vehiculo C3S3 y carroceria GENERAL. Este flujo usa payload manual con kms y peajes.
       </p>
+      <footer
+        style={{
+          marginTop: 12,
+          paddingTop: 10,
+          borderTop: "1px solid #e5e5e5",
+          fontSize: 12,
+          color: "#666",
+          letterSpacing: 0.2,
+        }}
+      >
+        Fuente: Modelo SIICETAC.- Mintransporte Colombia - Desarrollado por Atiemppo - Febrero 2026
+      </footer>
     </main>
   );
 }
