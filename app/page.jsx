@@ -293,7 +293,7 @@ export default function Page() {
           letterSpacing: 0.2,
         }}
       >
-        Fuente: Modelo SIICETAC.- Mintransporte Colombia - Desarrollado por Atiemppo - Febrero 2026
+        Fuente: Modelo SICETAC.- Mintransporte Colombia - Desarrollado por Atiemppo - Febrero 2026
       </footer>
     </main>
   );
