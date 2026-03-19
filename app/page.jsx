@@ -176,7 +176,7 @@ export default function Page() {
               <a className="hero-link" href="https://www.eldatologistico.com/" target="_blank" rel="noreferrer">
                 Ir al newsletter
               </a>
-              <a className="hero-link" href="https://wa.me/57313450394?text=Hola%2C%20quiero%20consultar%20SICETAC%20al%20Instante%20por%20WhatsApp.%20Escribe%20asi%3A%20origen%20a%20destino" target="_blank" rel="noreferrer">
+              <a className="hero-link" href="https://wa.me/573134503694?text=Hola%2C%20quiero%20consultar%20SICETAC%20al%20Instante%20por%20WhatsApp.%20Escribe%20asi%3A%20origen%20a%20destino" target="_blank" rel="noreferrer">
                 WhatsApp SICETAC
               </a>
             </div>
